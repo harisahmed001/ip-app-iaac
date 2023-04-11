@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: "{{ .Values.namespace }}"
+  name: {{ include "ipapp.fullname" . }}
+  labels:
+    {{- include "ipapp.labels" . | nindent 4 }}
+data:
+{{- range $key, $val := .Values.envs }}
+{{ $key | indent 4}}: {{ $val | quote }}
+{{- end}}

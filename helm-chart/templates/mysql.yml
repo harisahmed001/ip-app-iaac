@@ -1,0 +1,44 @@
+{{- if .Values.mysql.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-mysql-deployment
+spec:
+  template:
+    metadata:
+      name: myapp-mysql-pod
+      labels:
+        app: myapp-mysql
+        type: application-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7-debian
+        ports:
+        - name: mysql-port
+          containerPort: 3306
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: root
+          - name: MYSQL_ROOT_HOST
+            value: '%'
+          - name: MYSQL_DATABASE
+            value: 'ipapp'
+  replicas: 1
+  selector: 
+    matchLabels:
+      type: application-mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 3306
+      port: 3306
+  selector:
+      type: application-mysql
+{{- end }}
