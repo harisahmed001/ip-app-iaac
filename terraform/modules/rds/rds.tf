@@ -1,4 +1,11 @@
 
+# RDS instance resource
+# TODO Add intance class to variable input
+# TODO Add storage to variable input
+# TODO Add engine to variable input
+# TODO Add parameter group to variable input
+# TODO Add multi_az to variable input
+# TODO Add skip_final_snapshot to variable input
 resource "aws_db_instance" "rds_instance" {
   allocated_storage      = 10
   identifier             = "${var.name}-tf-rds"
@@ -16,12 +23,15 @@ resource "aws_db_instance" "rds_instance" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 }
 
+# RDS subnet group resource
 resource "aws_db_subnet_group" "aws_db_subnet_group_rds" {
   name        = "${var.name}-tf-rds-subnet-group"
   subnet_ids  = var.subnet_ids
   description = "${var.name}-tf-rds-subnet-group"
 }
 
+# RDS security group
+# TODO Add general rules to variable input
 resource "aws_security_group" "rds_sg" {
   name        = "${var.name}-tf-rds"
   description = "Allow all ports, just for testing"

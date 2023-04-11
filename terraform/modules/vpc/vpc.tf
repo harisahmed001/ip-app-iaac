@@ -1,3 +1,4 @@
+# VPC resource
 resource "aws_vpc" "vpc_main" {
   cidr_block           = var.cidr
   instance_tenancy     = "default"
@@ -6,6 +7,8 @@ resource "aws_vpc" "vpc_main" {
   tags                 = merge({ Name = "${var.name}-tf-vpc" }, var.tags)
 }
 
+# Public subnets resource
+# TODO Add tags to varaible input
 resource "aws_subnet" "public_subnet" {
   count                   = length(var.public_subnets)
   vpc_id                  = aws_vpc.vpc_main.id
@@ -21,6 +24,8 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
+# Private subnets resource
+# TODO Add tags to varaible input
 resource "aws_subnet" "private_subnet" {
   count             = length(var.private_subnets)
   vpc_id            = aws_vpc.vpc_main.id
@@ -35,6 +40,7 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
+# Internet gateway resource
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.vpc_main.id
 
@@ -43,9 +49,11 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
+# Private route table resource
 resource "aws_route_table" "private_rt" {
   vpc_id = aws_vpc.vpc_main.id
 
+  # Dynamic is used here for make it into condition of nat gateway
   dynamic "route" {
     for_each = var.enable_nat_gateway ? [1] : []
     content {
@@ -59,6 +67,7 @@ resource "aws_route_table" "private_rt" {
   }
 }
 
+# Default route table resource
 resource "aws_default_route_table" "default_public_rt" {
   default_route_table_id = aws_vpc.vpc_main.default_route_table_id
   route {
@@ -70,6 +79,8 @@ resource "aws_default_route_table" "default_public_rt" {
   }
 }
 
+# NACL resource for public subnet
+# TODO Filter the rules as per need
 resource "aws_default_network_acl" "default" {
   default_network_acl_id = aws_vpc.vpc_main.default_network_acl_id
   subnet_ids             = aws_subnet.public_subnet.*.id
@@ -95,6 +106,8 @@ resource "aws_default_network_acl" "default" {
   }
 }
 
+# NACL resource for private subnet
+# TODO Filter the rules as per need
 resource "aws_network_acl" "main" {
   vpc_id     = aws_vpc.vpc_main.id
   subnet_ids = aws_subnet.private_subnet.*.id
@@ -122,18 +135,21 @@ resource "aws_network_acl" "main" {
   }
 }
 
+# Route table association resource for public subnet
 resource "aws_route_table_association" "public_rt_association" {
   count          = length(aws_subnet.public_subnet)
   subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_default_route_table.default_public_rt.id
 }
 
+# Route table association resource for private subnet
 resource "aws_route_table_association" "private_rt_association" {
   count          = length(aws_subnet.private_subnet)
   subnet_id      = aws_subnet.private_subnet[count.index].id
   route_table_id = aws_route_table.private_rt.id
 }
 
+# Elastic IP resource
 resource "aws_eip" "nat_eip" {
   count = var.enable_nat_gateway ? 1 : 0
   tags = {
@@ -141,6 +157,7 @@ resource "aws_eip" "nat_eip" {
   }
 }
 
+# NAT resourcee
 resource "aws_nat_gateway" "nat_gw" {
   count         = var.enable_nat_gateway ? 1 : 0
   allocation_id = aws_eip.nat_eip[0].id
@@ -151,6 +168,8 @@ resource "aws_nat_gateway" "nat_gw" {
   }
 }
 
+# SG for vpc endpoint
+# TODO Filter the rules as per need
 resource "aws_security_group" "vpc_sg" {
   name        = "${var.name}-tf-vpc-all-allowed-sg"
   description = "Allow all ports, #TODO refine it later"
@@ -176,6 +195,7 @@ resource "aws_security_group" "vpc_sg" {
   }
 }
 
+# VPC endpoint for eks ec2, only if private provision
 resource "aws_vpc_endpoint" "ec2" {
   count             = var.enable_ec2_vpc_endpoint ? 1 : 0
   vpc_id            = aws_vpc.vpc_main.id

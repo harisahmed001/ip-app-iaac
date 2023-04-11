@@ -1,3 +1,4 @@
+# Creation of service account on EKS
 resource "kubernetes_service_account" "service-account" {
   metadata {
     name      = var.service_account
@@ -12,6 +13,8 @@ resource "kubernetes_service_account" "service-account" {
   }
 }
 
+# Ingress chart to EKS
+# TODO Add this to variable condition
 resource "helm_release" "ingresschart" {
   name             = "ingresschart"
   chart            = "ingress-nginx"
@@ -22,13 +25,14 @@ resource "helm_release" "ingresschart" {
   wait             = false
 }
 
+# ALB chart to EKS
+# TODO Add this to variable condition
 resource "helm_release" "aws-load-balancer-controller" {
   name       = var.service_account
   chart      = var.service_account
   repository = "https://aws.github.io/eks-charts"
   namespace  = "kube-system"
   wait       = false
-
 
   set {
     name  = "clusterName"

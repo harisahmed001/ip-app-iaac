@@ -1,23 +1,23 @@
 variable "name" {
   default     = "undefined"
-  description = "#TODO"
+  description = "Name of the resource"
 }
 
 variable "password" {
   default     = "hereisthetestpassword"
-  description = "#TODO"
+  description = "Password of user"
 }
 
 variable "vpc_id" {
-  description = "#TODO"
+  description = "VPC id for sg"
 }
 
 variable "subnet_ids" {
   default     = []
-  description = "#TODO"
+  description = "Subnet ids where rds is created"
 }
 
 variable "source_sg" {
   default     = []
-  description = "#TODO"
+  description = "Source sg list"
 }

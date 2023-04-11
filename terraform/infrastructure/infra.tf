@@ -1,15 +1,22 @@
 module "vpc" {
   source = "../modules/vpc"
   name   = var.name
+  # CIDR for vpc
   cidr   = "10.0.0.0/16"
 
+  # Public AZs
   az_public  = ["us-east-1a", "us-east-1b"]
+  # Private AZs
   az_private = ["us-east-1c", "us-east-1d"]
 
+  # Public subnets
   public_subnets  = ["10.0.3.0/24", "10.0.4.0/24"]
+  # Private subnets
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
 
+  # To enable nat gateway
   enable_nat_gateway      = true
+  # To enable ec2 vpc endpoint, eks node group needs it in case of private provision
   enable_ec2_vpc_endpoint = true
 
   tags = {
@@ -28,6 +35,7 @@ module "rds" {
   name       = var.name
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
+  # Source of trafic sg
   source_sg  = [module.eks.cluster_primary_security_group_id]
 }
 
@@ -66,6 +74,7 @@ module "eks_managed_node_group" {
   capacity_type  = "ON_DEMAND"
 }
 
+# For provisioning helm charts
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
@@ -76,6 +85,7 @@ provider "kubernetes" {
   }
 }
 
+# For provisioning helm charts
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -88,8 +98,15 @@ provider "helm" {
   }
 }
 
+# Provision ingress helm charts
 module "eks-ingress" {
   source = "../modules/eks-ingress"
   name   = var.name
   eks    = module.eks
+
+  ## TODO
+  # Add paramter to add nginx ingress from condition
+  # Add paramter to add alb ingress from condition
+  # nginx_ingress = true
+  # alb_ingress = true
 }

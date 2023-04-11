@@ -1,14 +1,14 @@
 variable "chart_name" {
   default     = "undefined"
-  description = "#TODO"
+  description = "Name of the resource"
 }
 
 variable "chart" {
-  default     = ""
-  description = "#TODO"
+  default     = "chart"
+  description = "Name of the chart"
 }
 
 variable "wait" {
   default     = ""
-  description = "#TODO"
+  description = "Wait condition for helm resource"
 }

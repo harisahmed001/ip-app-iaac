@@ -1,13 +1,13 @@
 variable "name" {
   default     = "undefined"
-  description = "#TODO"
+  description = "Name of the resource"
 }
 
 variable "eks" {
-  description = "#TODO"
+  description = "EKS object"
 }
 
 variable "service_account" {
   default     = "aws-load-balancer-controller"
-  description = "#TODO"
+  description = "Service account name to be created"
 }

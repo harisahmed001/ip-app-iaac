@@ -1,3 +1,6 @@
+# Policy taken from this URL
+# https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
+# Source: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/
 resource "aws_iam_policy" "eks-workload-policy" {
   name = "${var.name}-eks-workload-policy"
 
@@ -244,6 +247,8 @@ resource "aws_iam_policy" "eks-workload-policy" {
   })
 }
 
+# Attaching policy to EKS OIDC
+# TODO : Add service account name to sts token, not to be used from other resource
 resource "aws_iam_role" "eks-workload" {
   name = "${var.name}-eks-workload"
 

@@ -1,6 +1,6 @@
 variable "name" {
   default     = "undefined"
-  description = "#TODO"
+  description = "Name of the resource"
 }
 
 variable "cidr" {

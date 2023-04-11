@@ -9,7 +9,7 @@ provider "aws" {
 
 variable "name" {
   default     = "ipapp"
-  description = "#TODO"
+  description = "name of the application"
 }
 
 variable "instance_eks" {
