@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{ include "ipapp.fullname" . }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: "{{ .Values.service.healthcheckPath }}"
+    alb.ingress.kubernetes.io/load-balancer-name: "{{ include "ipapp.fullname" . }}"
+    alb.ingress.kubernetes.io/subnets: "{{ .Values.service.subnets }}"
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: svc-{{ include "ipapp.fullname" . }}
+              port:
+                number: {{ .Values.envs.FLASK_PORT }}

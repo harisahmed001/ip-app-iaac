@@ -11,6 +11,11 @@ This repository contains following parts
 ## Setup Environment
 
 Infrastructure
+
+A VPC is created with two public subnets and two private subnets. All infrastructure is deployed on private subnet, just LB is using Public subnets to server traffic from the internet.
+
+Terrafrom code is modulized for dynamic usage.
+
 ```bash
 cd terraform/infrastructure
 terragrunt init

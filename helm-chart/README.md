@@ -14,3 +14,8 @@ Chart Install
 ```bash
 helm upgrade --install ipapp ./ --wait
 ```
+
+## Notes
+* Subnets are defined manually, as kubernetes by default picks public subnets only. As our infra is on private so we need private subnets also.
+* Sops should be used, credentials shouldnt be on plain text
+* Mysql pod is just for debugging purpose

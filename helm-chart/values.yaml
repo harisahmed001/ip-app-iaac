@@ -2,6 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# It is just a demo app with only one pod
 replicaCount: 1
 
 image:
@@ -22,13 +23,17 @@ resources:
     cpu: 100m
     memory: 128Mi
 
+# This is just for debugging purpose. RDS is used for main workload.
 mysql:
   enabled: false
 
+# Subnets are defined manually, as kubernetes by default picks public subnets only. As our infra is on private so we need private subnets also.
 service:
   healthcheckPath: "/ping"
-  subnets: "subnet-07ea763b01fa16905,subnet-03c3789b3eb3c3e09,subnet-0551c66daeb9724f2,subnet-0c129d30376332997"
+  subnets: "subnet-054b7d35916e4eae2,subnet-0a70f0f8a9dde63d5,subnet-0958054bf10c7274b,subnet-037a4d701adb4f25d"
 
+# Envs for application
+# #TODO sops would be used here, credentials shouldnt be on plain text
 envs:
   MYSQL_HOST: "ipapp-tf-rds.caecvncpsx8a.us-east-1.rds.amazonaws.com"
   MYSQL_PORT: 3306
