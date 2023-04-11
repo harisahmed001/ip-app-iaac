@@ -20,7 +20,7 @@ module "vpc" {
 
 module "ecr" {
   source = "../modules/ecr"
-  #name   = var.name
+  name   = var.name
 }
 
 module "rds" {
